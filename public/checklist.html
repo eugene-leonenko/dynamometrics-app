@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista kontrolna - wynajem domu, Gdynia Witomino</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --card2:#1d212b; --ink:#e8eaed; --muted:#9aa3b2;
+    --line:#2a2f3a; --accent:#4f9cf9; --green:#3fb950; --amber:#d29922; --red:#f85149;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:24px 18px 80px;}
+  header.top{
+    background:linear-gradient(135deg,#1b2230,#141821); border:1px solid var(--line);
+    border-radius:14px; padding:22px 22px 18px; margin-bottom:18px;
+  }
+  h1{font-size:1.45rem; margin:0 0 4px;}
+  .sub{color:var(--muted); font-size:.95rem; margin:0 0 14px;}
+  .facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px 16px; font-size:.9rem;}
+  .facts div{padding:8px 10px; background:var(--card2); border-radius:8px; border:1px solid var(--line);}
+  .facts b{display:block; color:var(--muted); font-weight:600; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px;}
+
+  .hank{
+    border-left:3px solid var(--accent); background:var(--card); border-radius:0 10px 10px 0;
+    padding:14px 16px; margin:0 0 22px; font-size:.92rem; color:#cdd4df;
+  }
+  .hank b{color:var(--accent);}
+
+  .progress{position:sticky; top:0; z-index:5; background:var(--bg); padding:10px 0 12px; margin-bottom:4px;}
+  .bar{height:10px; background:var(--card2); border-radius:6px; overflow:hidden; border:1px solid var(--line);}
+  .bar > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--green)); transition:width .3s;}
+  .pcount{font-size:.82rem; color:var(--muted); margin-top:6px;}
+
+  section{background:var(--card); border:1px solid var(--line); border-radius:12px; margin:14px 0; overflow:hidden;}
+  section > h2{
+    font-size:1.05rem; margin:0; padding:14px 18px; background:var(--card2);
+    border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px;
+  }
+  section > h2 .n{
+    display:inline-flex; width:24px; height:24px; align-items:center; justify-content:center;
+    background:var(--accent); color:#06121f; border-radius:50%; font-size:.8rem; font-weight:700; flex:none;
+  }
+  .body{padding:6px 18px 16px;}
+
+  label.item{
+    display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); cursor:pointer; align-items:flex-start;
+  }
+  label.item:last-child{border-bottom:0;}
+  label.item input[type=checkbox]{
+    width:20px; height:20px; margin-top:2px; flex:none; accent-color:var(--green); cursor:pointer;
+  }
+  .item .txt{flex:1;}
+  .item .txt .term{color:var(--accent); font-weight:600;}
+  .item .txt small{display:block; color:var(--muted); font-size:.84rem; margin-top:3px;}
+  .item.crit .txt strong{color:var(--amber);}
+
+  .flag{
+    display:flex; gap:10px; padding:9px 10px; color:#e5b7b4; font-size:.92rem; align-items:flex-start;
+    cursor:pointer; user-select:none; border-radius:8px; border:1px solid transparent;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .flag::before{content:"\26A0"; color:var(--red); flex:none;}
+  .flag:hover{background:rgba(255,255,255,.04);}
+  .flag.on{background:rgba(248,81,73,.18); border-color:var(--red); color:#ffd9d5; font-weight:600;}
+  .flaghint{font-size:.84rem; color:var(--muted); margin:2px 0 10px;}
+  .flagwarn{
+    display:none; align-items:center; gap:10px; background:rgba(248,81,73,.16);
+    border:1px solid var(--red); color:#ffb3ad; border-radius:9px; padding:12px 14px;
+    margin:6px 0 12px; font-weight:700; font-size:.96rem;
+  }
+  .flagwarn::before{content:"\1F6D1"; font-size:1.1rem;}
+  body.alarm #sec-flags{border-color:var(--red); box-shadow:0 0 0 2px rgba(248,81,73,.55);}
+  body.alarm #sec-flags > h2{background:rgba(248,81,73,.22); color:#ffd9d5;}
+  body.alarm .wrap{box-shadow:inset 0 0 0 3px rgba(248,81,73,.35); border-radius:14px;}
+
+  .money{width:100%; border-collapse:collapse; font-size:.92rem;}
+  .money td{padding:9px 6px; border-bottom:1px solid var(--line);}
+  .money td:first-child{color:var(--muted);}
+  .money td:last-child{text-align:right; font-weight:600;}
+  .money .ok{color:var(--green); font-weight:600; font-size:.82rem;}
+
+  textarea, input.note{
+    width:100%; background:var(--card2); border:1px solid var(--line); color:var(--ink);
+    border-radius:8px; padding:10px 12px; font-family:inherit; font-size:.92rem; margin-top:6px; resize:vertical;
+  }
+  textarea{min-height:90px;}
+  .field-label{font-size:.88rem; color:var(--muted); margin-top:12px;}
+
+  .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:24px;}
+  button{
+    font-family:inherit; font-size:.95rem; font-weight:600; border:1px solid var(--line);
+    border-radius:9px; padding:11px 18px; cursor:pointer; color:var(--ink); background:var(--card2);
+  }
+  button.primary{background:var(--accent); color:#06121f; border-color:var(--accent);}
+  button.ghost{background:transparent;}
+  .saved{font-size:.82rem; color:var(--green); margin-top:10px; min-height:18px;}
+
+  footer{color:var(--muted); font-size:.8rem; margin-top:26px; text-align:center; line-height:1.6;}
+
+  @media print{
+    body{background:#fff; color:#000;}
+    .hank,section{break-inside:avoid;}
+    .actions,.progress{display:none;}
+    section,header.top{border-color:#bbb;}
+    .item .txt small,.facts b,.sub,.money td:first-child{color:#444;}
+    .item .txt .term,.hank b{color:#000;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>Lista kontrolna wynajmu</h1>
+    <p class="sub">Dom na wynajem &middot; Gdynia, Witomino, ul. Niska &middot; oferta INVILLA Nieruchomości</p>
+    <div class="facts">
+      <div><b>Powierzchnia</b>303 m&sup2; (działka 841 m&sup2;)</div>
+      <div><b>Pokoje</b>4 &middot; ogrzewanie gazowe</div>
+      <div><b>Czynsz najmu</b>4500 zł / mies.</div>
+      <div><b>Kaucja zwrotna</b>6000 zł</div>
+      <div><b>Typ umowy</b>najem instytucjonalny, min. 12 mies.</div>
+      <div><b>Prowizja biura</b>1-mies. czynsz netto (płaci najemca)</div>
+    </div>
+  </header>
+
+  <div class="hank">
+    <b>Krótko o tej ofercie:</b> wygląda wiarygodnie, nie jak oszustwo. Kaucja 6000 zł to ok. 1,3-krotność czynszu, a prawo pozwala żądać aż 6-krotności (27&nbsp;000 zł) &mdash; niska kaucja to dobry znak. Najważniejsze do sprawdzenia: czy <b>właściciel prowadzi działalność gospodarczą</b> w zakresie wynajmu (warunek ważności umowy instytucjonalnej, punkt 2). Bo to DOM &mdash; pilnuj też ukrytych kosztów: ogrzewania, ścieków i podziału napraw (punkt 4). A jako cudzoziemiec spoza UE &mdash; meldunku i papierów pod pobyt (punkt 5).
+  </div>
+
+  <div class="progress">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="pcount" id="pcount">0 z 0 zaznaczone</div>
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <h2><span class="n">1</span> Co przygotować ze swojej strony</h2>
+    <div class="body" data-group="1"></div>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <h2><span class="n">2</span> Weryfikacja właściciela i nieruchomości &mdash; NAJWAŻNIEJSZE</h2>
+    <div class="body" data-group="2"></div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <h2><span class="n">3</span> Umowa (najem instytucjonalny)</h2>
+    <div class="body" data-group="3"></div>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <h2><span class="n">4</span> Dom: ogrzewanie, media, ścieki</h2>
+    <div class="body" data-group="4"></div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <h2><span class="n">5</span> Cudzoziemiec: meldunek i pobyt</h2>
+    <div class="body" data-group="5"></div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <h2><span class="n">6</span> Pieniądze &mdash; sprawdź kwoty zanim cokolwiek wpłacisz</h2>
+    <div class="body">
+      <table class="money">
+        <tr><td>Czynsz najmu</td><td>4500 zł / mies.</td></tr>
+        <tr><td>Dodatkowo</td><td>liczniki (woda, gaz, prąd) + śmieci wg zużycia</td></tr>
+        <tr><td>Kaucja zwrotna</td><td>6000 zł <span class="ok">(prawo dopuszcza do 27 000 zł &mdash; tu nisko, OK)</span></td></tr>
+        <tr><td>Prowizja biura (jednorazowo)</td><td>1-mies. czynsz netto</td></tr>
+      </table>
+      <div data-group="6"></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section>
+    <h2><span class="n">7</span> Negocjacja ceny</h2>
+    <div class="body">
+      <div class="hank" style="margin:6px 0 10px; border-radius:10px;">
+        <b>Realne pole do negocjacji:</b> ok. 150-350 zł/mies. (mniej więcej 3-8%). Najmocniejszy argument: to duży dom (303 m&sup2;) z ogrzewaniem gazowym &mdash; mały krąg chętnych, a dla właściciela-firmy jeden pusty miesiąc to strata 4500 zł. Łatwiej da zniżkę, niż ma stać pusty. Im dłużej oferta wisi, tym większe pole do rozmowy.
+      </div>
+      <div data-group="7"></div>
+      <div class="field-label">Jak długo oferta jest wystawiona (zapytaj agenta):</div>
+      <input class="note" id="note_listed" placeholder="np. 7 tygodni">
+      <div class="field-label">Docelowy czynsz / oferta startowa:</div>
+      <input class="note" id="note_target" placeholder="np. start 4200, cel 4300 + prowizja po stronie właściciela">
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section id="sec-flags">
+    <h2><span class="n">8</span> Czerwone flagi &mdash; uciekaj, jeśli...</h2>
+    <div class="body">
+      <div id="flagWarn" class="flagwarn">STOP. Masz czerwoną flagę &mdash; podziękuj grzecznie i wychodź. Nie wpłacaj ani złotówki.</div>
+      <p class="flaghint">Kliknij każdą flagę, która wystąpiła. Jeśli choć jedna się zaświeci na czerwono &mdash; to sygnał, żeby się wycofać.</p>
+      <div id="flags"></div>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section>
+    <h2><span class="n">9</span> Twoje notatki i pytania do agenta</h2>
+    <div class="body">
+      <div class="field-label">Numer księgi wieczystej (KW), który podał właściciel:</div>
+      <input class="note" id="note_kw" placeholder="np. GD1Y/00012345/6">
+      <div class="field-label">Imię i nazwisko / nazwa właściciela z Działu II KW:</div>
+      <input class="note" id="note_owner" placeholder="...">
+      <div class="field-label">Pytania, wątpliwości, ustalenia z prezentacji:</div>
+      <textarea id="note_general" placeholder="Zapisuj tutaj wszystko, co ustalisz..."></textarea>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="primary" id="btnExport">Zapisz / pobierz moje odpowiedzi</button>
+    <button class="ghost" id="btnPrint">Drukuj / zapisz jako PDF</button>
+    <button class="ghost" id="btnReset">Wyczyść wszystko</button>
+  </div>
+  <div class="saved" id="savedMsg"></div>
+
+  <footer>
+    Strona zapisuje Twoje odpowiedzi automatycznie w tej przeglądarce.<br>
+    To nie jest porada prawna &mdash; to lista kontrolna. W razie wątpliwości skonsultuj umowę z prawnikiem.<br>
+    Sprawdź KW (Działy II, III i IV) za darmo na <b>ekw.ms.gov.pl</b> &middot; działalność właściciela na <b>aplikacja.ceidg.gov.pl</b> (CEIDG) lub <b>prs.ms.gov.pl</b> (KRS).
+  </footer>
+
+</div>
+
+<script>
+/* ---- Checklist content ---- */
+const ITEMS = {
+  "1":[
+    {id:"i_pit", t:"Dokument dochodu/zatrudnienia gotowy", s:"PIT, zaświadczenie o zatrudnieniu lub wyciąg z konta &mdash; oferta tego wymaga. (Agent zaakceptował PIT.)"},
+    {id:"i_id", t:"Twój dokument tożsamości przy sobie", s:"Paszport lub karta pobytu na prezentację."}
+  ],
+  "2":[
+    {id:"i_kw_ask", t:"Poproszono o numer księgi wieczystej (KW)", s:"Każda nieruchomość ma KW. Brak/unikanie odpowiedzi = sygnał ostrzegawczy."},
+    {id:"i_kw_check", t:"Sprawdzono KW samodzielnie na ekw.ms.gov.pl", s:"Za darmo, online, w 5 minut."},
+    {id:"i_kw_owner", t:"Dział II KW: właściciel zgadza się z osobą podpisującą umowę", crit:true, s:"To najważniejsze dopasowanie: nazwisko w KW = dokument tożsamości = strona umowy."},
+    {id:"i_kw_mortg", t:"Dział IV KW: sprawdzono hipoteki / obciążenia", s:"Hipoteka nie blokuje najmu, ale warto wiedzieć."},
+    {id:"i_kw_dz3", t:"Dział III KW: brak zajęcia komorniczego i wzmianek o egzekucji", crit:true, s:"Częsta luka! Dom pod egzekucją może pójść na licytację &mdash; stracisz dach mimo ważnej umowy. Sprawdź też adres na licytacje.komornicze.pl, zanim cokolwiek wpłacisz."},
+    {id:"i_biz", t:"Właściciel prowadzi działalność gospodarczą w zakresie wynajmu", crit:true, s:"WAŻNE: najem instytucjonalny może zawrzeć TYLKO taki właściciel (warunek ważności umowy, art. 19f ust. 1). Sprawdź w CEIDG (aplikacja.ceidg.gov.pl) lub KRS (prs.ms.gov.pl). Brak wpisu &mdash; ten typ umowy jest niewłaściwy."},
+    {id:"i_person", t:"Spotkanie osobiste z właścicielem lub pełnomocnikiem", s:"Jeśli podpisuje pełnomocnik &mdash; poproszono o pełnomocnictwo (najlepiej notarialne)."},
+    {id:"i_agency", t:"Sprawdzono biuro INVILLA Nieruchomości", s:"Opinie Google, adres, NIP &mdash; czy to realne, działające biuro."},
+    {id:"i_brokerage", t:"Zażądano od biura umowy pośrednictwa lub pełnomocnictwa", s:"Potwierdź, że pośrednik działa w imieniu właściciela z Działu II KW. Płacisz prowizję = 1 czynsz, więc upewnij się co do umocowania. Umowa pośrednictwa wymaga formy pisemnej (art. 180 ust. 3 UGN)."}
+  ],
+  "3":[
+    {id:"i_term", t:"Czas oznaczony min. 12 miesięcy &mdash; rozumiem, że jest sztywny", s:"Najem instytucjonalny z mocy art. 19f ust. 2 MUSI być na czas oznaczony; ustawa wyłącza art. 661 par. 1 KC. Umowa nie przekształci się automatycznie w bezterminową."},
+    {id:"i_exit", t:"Negocjowano klauzulę wcześniejszego wypowiedzenia", crit:true, s:"Bez niej trudno wyjść przed końcem 12 miesięcy (art. 673 par. 3 KC). Jeśli Twoja sytuacja może się zmienić &mdash; to kluczowe."},
+    {id:"i_notary", t:"Akt notarialny (poddanie się egzekucji) &mdash; przeczytany i zrozumiany", crit:true, s:"Podpisujesz zgodę na eksmisję bez wyroku ORAZ zrzeczenie się prawa do lokalu socjalnego i pomieszczenia tymczasowego (art. 19f ust. 3). Po umowie właściciel doręcza żądanie opuszczenia z terminem min. 14 dni (art. 19i). Miej plan B (drugi adres, oszczędności). Koszt aktu ustawowo do 1/10 min. wynagrodzenia (ok. 480 zł), płaci najemca."},
+    {id:"i_raise", t:"Wzór podwyżki czynszu wpisany do umowy", crit:true, s:"UWAGA: w najmie instytucjonalnym ustawowe limity podwyżek (art. 8a) NIE obowiązują &mdash; liczą się WYŁĄCZNIE zapisy umowy (art. 19h ust. 2). Brak klauzuli waloryzacji = brak podstawy do podwyżki w trakcie. Zażądaj precyzyjnego wzoru, np. raz w roku max o wskaźnik inflacji GUS."},
+    {id:"i_repairs", t:"Podział obowiązków napraw jasno zapisany", crit:true, s:"Dach, fundamenty, ściany, kocioł i instalacje = WŁAŚCICIEL (art. 6a ustawy, art. 662 KC). Najemca tylko drobne naprawy &mdash; armatura, malowanie (art. 6b). Wykreśl klauzule przerzucające naprawy konstrukcyjne na Ciebie. W domu to ogromna różnica kosztów."},
+    {id:"i_datapewna", t:"Umowa z datą pewną (poświadczenie u notariusza)", s:"I tak idziesz po akt poddania się egzekucji. Data pewna sprawia, że nowy nabywca po sprzedaży domu NIE może wypowiedzieć Twojego najmu (art. 678 par. 2 KC). Niemal darmowa ochrona."},
+    {id:"i_protocol", t:"Ustalono protokół zdawczo-odbiorczy przy wprowadzeniu", s:"Spisuje stan domu + stany liczników (woda, gaz, prąd). Zrób zdjęcia. Chroni Twoją kaucję przy wyprowadzce."},
+    {id:"i_deposit_ret", t:"Warunki zwrotu kaucji jasne", s:"Ustawowo: zwrot w ciągu miesiąca od opróżnienia lokalu, po potrąceniu ewentualnych zaległości (art. 19f ust. 6)."}
+  ],
+  "4":[
+    {id:"d_energy", t:"Zażądano świadectwa charakterystyki energetycznej (SCHE)", crit:true, s:"Ustawowy obowiązek właściciela (od 28.04.2023) dla każdego najmu &mdash; nie możesz się tego prawa zrzec. Przy domu 303 m&sup2; oszacuj na jego podstawie realny koszt ogrzewania PRZED związaniem się na 12 miesięcy."},
+    {id:"d_heating", t:"Ustalono źródło ogrzewania i sposób rozliczania mediów", s:"Gaz sieciowy vs zbiornik LPG/olej vs piec vs pompa ciepła; kto napełnia zbiornik; ryczałt vs zaliczki wg rachunków. Zażądaj wglądu w ostatnie rachunki &mdash; w domu media potrafią przewyższyć różnice w czynszu."},
+    {id:"d_sewage", t:"Ustalono odprowadzanie ścieków (kanalizacja vs szambo)", s:"Szambo/oczyszczalnia: zapisz kto płaci za wywóz i jak często (250-400 zł za wywóz, nawet kilka tys. zł/rok). Obowiązki wobec gminy po stronie właściciela (art. 5 ustawy o utrzymaniu czystości)."},
+    {id:"d_internet", t:"Sprawdzono dostępność internetu pod adresem", s:"Sprawdź u operatorów/UKE, nie wierz ogłoszeniu &mdash; na obrzeżach bywa brak światłowodu. Jeśli pracujesz zdalnie, rozważ klauzulę wyjścia, gdy łącze okaże się za słabe."}
+  ],
+  "5":[
+    {id:"f_meldunek", t:"Sprawdzono prawo do zameldowania pod tym adresem", crit:true, s:"Umowa najmu = tytuł prawny do meldunku; NIE potrzebujesz zgody właściciela. Zapis w umowie zakazujący meldunku jest BEZSKUTECZNY &mdash; sprawdź, czy go nie ma. Jako cudzoziemiec spoza UE masz obowiązek meldunkowy przy pobycie powyżej 30 dni."},
+    {id:"f_pobyt", t:"Umowa nadaje się jako załącznik do wniosku o pobyt", crit:true, s:"W woj. pomorskim procedury pobytowe potrafią się ciągnąć &mdash; ważna umowa najmu i zameldowanie bywają potrzebne do wniosku o kartę pobytu. Zadbaj o oryginał umowy z datą pewną i potwierdzenie meldunku."}
+  ],
+  "6":[
+    {id:"i_writing", t:"Na piśmie ustalono kto za co płaci", s:"Zanim wpłacisz cokolwiek."},
+    {id:"i_noprepay", t:"NIE wpłacono zaliczki przed obejrzeniem i przed zobaczeniem KW", crit:true, s:"Żadna 'rezerwacja' przelewem przed weryfikacją. Jeśli już opłata rezerwacyjna &mdash; tylko na podstawie pisemnej umowy z warunkiem 100% zwrotu i zaliczeniem na czynsz/kaucję."},
+    {id:"m_topup", t:"Zrozumiano obowiązek uzupełniania kaucji", s:"Jeśli właściciel pobierze coś z kaucji w trakcie najmu, masz obowiązek dopłacić ją z powrotem do 6000 zł (art. 19f ust. 8). Ustal w umowie tryb i jakich należności to dotyczy."}
+  ],
+  "7":[
+    {id:"n_listed", t:"Sprawdzono, jak długo oferta jest wystawiona", s:"6+ tygodni = właściciel bardziej skłonny do zniżki."},
+    {id:"n_longer", t:"Zaproponowano dłuższy okres (np. 24 mies.) za niższy czynsz", s:"Firma-właściciel ceni pewny, długi najem."},
+    {id:"n_fee", t:"Zapytano, czy właściciel pokryje lub podzieli prowizję biura", s:"Często łatwiej ugrać niż sam czynsz - to cały 1-mies. czynsz."},
+    {id:"n_heating", t:"Użyto kosztów ogrzewania i dużego metrażu jako argumentu", s:"Daje właścicielowi powód, by zejść z ceny bez utraty twarzy."},
+    {id:"n_tenant", t:"Podkreślono: udokumentowany, stabilny, długoterminowy najemca", s:"Wiarygodność jest warta zniżki - mniejsze ryzyko dla właściciela."}
+  ]
+};
+const FLAGS = [
+  "Presja na wpłatę przed obejrzeniem lub przed pokazaniem KW",
+  "'Właściciel za granicą', nie może się spotkać, prosi o przelew 'na rezerwację'",
+  "Żądanie 'opłaty rezerwacyjnej' przelewem bez pisemnej umowy rezerwacyjnej z gwarancją zwrotu",
+  "Tylko gotówka, brak umowy na piśmie",
+  "Odmowa pokazania dokumentu tożsamości albo inne nazwisko niż w KW",
+  "Klauzula zakazująca meldunku albo przerzucająca naprawy konstrukcyjne na najemcę",
+  "Cena wyraźnie poniżej rynku bez sensownego wyjaśnienia"
+];
+
+/* ---- Render ---- */
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
+Object.keys(ITEMS).forEach(g=>{
+  const host=document.querySelector('.body[data-group="'+g+'"]');
+  if(!host) return;
+  ITEMS[g].forEach(it=>{
+    const lab=el("label","item"+(it.crit?" crit":""));
+    const cb=el("input"); cb.type="checkbox"; cb.id=it.id;
+    const txt=el("div","txt", (it.crit?"<strong>"+it.t+"</strong>":it.t) + (it.s?"<small>"+it.s+"</small>":""));
+    lab.appendChild(cb); lab.appendChild(txt); host.appendChild(lab);
+  });
+});
+const flagHost=document.getElementById("flags");
+const flagEls=[];
+FLAGS.forEach((f,idx)=>{
+  const d=el("div","flag",f); d.dataset.fid="flag_"+idx; d.tabIndex=0; d.setAttribute("role","button");
+  d.addEventListener("click",()=>toggleFlag(d));
+  d.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleFlag(d); } });
+  flagHost.appendChild(d); flagEls.push(d);
+});
+function toggleFlag(d){ d.classList.toggle("on"); updateAlarm(); save(); }
+function updateAlarm(){
+  const n=flagEls.filter(d=>d.classList.contains("on")).length;
+  document.body.classList.toggle("alarm", n>0);
+  document.getElementById("flagWarn").style.display = n>0 ? "flex" : "none";
+}
+
+/* ---- Persistence ---- */
+const KEY="najem_witomino_v1";
+const checks=[...document.querySelectorAll('input[type=checkbox]')];
+const notes=[...document.querySelectorAll('.note, textarea')];
+function save(){
+  const data={c:{},n:{},f:{}};
+  checks.forEach(c=>data.c[c.id]=c.checked);
+  notes.forEach(n=>data.n[n.id]=n.value);
+  flagEls.forEach(d=>data.f[d.dataset.fid]=d.classList.contains("on"));
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+  updateProgress(); flash("Zapisano.");
+}
+function load(){
+  let data; try{ data=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  if(!data) return;
+  checks.forEach(c=>{ if(data.c && c.id in data.c) c.checked=data.c[c.id]; });
+  notes.forEach(n=>{ if(data.n && n.id in data.n) n.value=data.n[n.id]; });
+  flagEls.forEach(d=>{ if(data.f && d.dataset.fid in data.f && data.f[d.dataset.fid]) d.classList.add("on"); });
+}
+function updateProgress(){
+  const total=checks.length, done=checks.filter(c=>c.checked).length;
+  document.getElementById("barFill").style.width=(total?Math.round(done/total*100):0)+"%";
+  document.getElementById("pcount").textContent=done+" z "+total+" zaznaczone";
+}
+let flashT;
+function flash(msg){ const m=document.getElementById("savedMsg"); m.textContent=msg; clearTimeout(flashT); flashT=setTimeout(()=>m.textContent="",2000); }
+
+checks.forEach(c=>c.addEventListener("change",save));
+notes.forEach(n=>n.addEventListener("input",()=>{ clearTimeout(flashT); flashT=setTimeout(save,600); }));
+
+/* ---- Export ---- */
+function buildReport(){
+  const L=[]; L.push("LISTA KONTROLNA WYNAJMU - Gdynia, Witomino, ul. Niska");
+  L.push("Oferta: INVILLA Nieruchomości | Czynsz 4500 zł | Kaucja 6000 zł | Najem instytucjonalny min. 12 mies.");
+  L.push("="+"=".repeat(70));
+  const titles={"1":"1. Co przygotować ze swojej strony","2":"2. Weryfikacja właściciela i nieruchomości","3":"3. Umowa","4":"4. Dom: ogrzewanie, media, ścieki","5":"5. Cudzoziemiec: meldunek i pobyt","6":"6. Pieniądze","7":"7. Negocjacja ceny"};
+  Object.keys(ITEMS).forEach(g=>{
+    L.push(""); L.push(titles[g]);
+    ITEMS[g].forEach(it=>{ const c=document.getElementById(it.id); L.push("  ["+(c&&c.checked?"X":" ")+"] "+it.t); });
+  });
+  L.push(""); L.push("NOTATKI");
+  L.push("  Numer KW: "+(document.getElementById("note_kw").value||"-"));
+  L.push("  Właściciel (Dział II): "+(document.getElementById("note_owner").value||"-"));
+  L.push("  Oferta wystawiona od: "+(document.getElementById("note_listed").value||"-"));
+  L.push("  Cel cenowy: "+(document.getElementById("note_target").value||"-"));
+  L.push("  Uwagi: "+(document.getElementById("note_general").value||"-"));
+  const onFlags=flagEls.filter(d=>d.classList.contains("on")).map(d=>d.textContent);
+  if(onFlags.length){ L.push(""); L.push("!!! CZERWONE FLAGI - PODZIEKUJ I UCIEKAJ:"); onFlags.forEach(t=>L.push("  - "+t)); }
+  const data={c:{},n:{},f:{}}; checks.forEach(c=>data.c[c.id]=c.checked); notes.forEach(n=>data.n[n.id]=n.value); flagEls.forEach(d=>data.f[d.dataset.fid]=d.classList.contains("on"));
+  L.push(""); L.push("---DANE---"); L.push(JSON.stringify(data));
+  return L.join("\n");
+}
+document.getElementById("btnExport").addEventListener("click",()=>{
+  save();
+  const text=buildReport();
+  const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="odpowiedzi-najem-Witomino.txt"; document.body.appendChild(a); a.click(); a.remove();
+  if(navigator.clipboard){ navigator.clipboard.writeText(text).then(()=>flash("Pobrano plik i skopiowano do schowka."),()=>flash("Pobrano plik.")); }
+  else flash("Pobrano plik.");
+});
+document.getElementById("btnPrint").addEventListener("click",()=>window.print());
+document.getElementById("btnReset").addEventListener("click",()=>{
+  if(!confirm("Na pewno wyczyścić wszystkie odpowiedzi?")) return;
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  checks.forEach(c=>c.checked=false); notes.forEach(n=>n.value="");
+  flagEls.forEach(d=>d.classList.remove("on")); updateAlarm();
+  updateProgress(); flash("Wyczyszczono.");
+});
+
+load(); updateProgress(); updateAlarm();
+</script>
+</body>
+</html>
